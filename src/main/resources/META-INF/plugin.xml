@@ -1,0 +1,55 @@
+<idea-plugin>
+    <id>br.ufc.confusion-atoms-refactor</id>
+    <name>Confusion Atoms Refactor</name>
+    <vendor></vendor>
+    <description>Detecta e refatora átomos de confusão em código Java.</description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Inspection 1: Operador condicional -->
+        <localInspection
+                language="JAVA"
+                displayName="Operador condicional (átomo de confusão)"
+                groupName="Confusion Atoms"
+                enabledByDefault="true"
+                level="WARNING"
+                implementationClass="br.ufc.aocrefactor.inspection.ConditionalOperatorInspection"/>
+        <!-- Inspection 2: Precedência de operadores -->
+        <localInspection
+                language="JAVA"
+                displayName="Precedência de operadores infix (átomo de confusão)"
+                groupName="Confusion Atoms"
+                enabledByDefault="true"
+                level="WARNING"
+                implementationClass="br.ufc.aocrefactor.inspection.InfixOperatorPrecedenceInspection"/>
+
+        <!-- Inspection 3: Pré-incremento/decremento -->
+        <localInspection
+                language="JAVA"
+                displayName="Pré-incremento/decremento (átomo de confusão)"
+                groupName="Confusion Atoms"
+                enabledByDefault="true"
+                level="WARNING"
+                implementationClass="br.ufc.aocrefactor.inspection.PreIncrementDecrementInspection"/>
+
+        <!-- Inspection 4: Pós-incremento/decremento -->
+        <localInspection
+                language="JAVA"
+                displayName="Pós-incremento/decremento (átomo de confusão)"
+                groupName="Confusion Atoms"
+                enabledByDefault="true"
+                level="WARNING"
+                implementationClass="br.ufc.aocrefactor.inspection.PostIncrementDecrementInspection"/>
+
+        <!-- Inspection 5: Aritmética como lógica -->
+        <localInspection
+                language="JAVA"
+                displayName="Aritmética como lógica (átomo de confusão)"
+                groupName="Confusion Atoms"
+                enabledByDefault="true"
+                level="WARNING"
+                implementationClass="br.ufc.aocrefactor.inspection.ArithmeticAsLogicInspection"/>
+    </extensions>
+</idea-plugin>

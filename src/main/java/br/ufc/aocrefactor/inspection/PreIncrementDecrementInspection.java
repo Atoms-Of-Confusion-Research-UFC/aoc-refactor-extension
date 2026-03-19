@@ -18,45 +18,56 @@ public class PreIncrementDecrementInspection extends AbstractBaseJavaLocalInspec
             public void visitPrefixExpression(@NotNull PsiPrefixExpression expression) {
                 super.visitPrefixExpression(expression);
 
-                // Verifica se é ++ ou -- (prefix)
                 IElementType op = expression.getOperationTokenType();
                 if (!isPreIncrementOrDecrement(op)) return;
 
-                // Verifica o pai — só marca se estiver nos contextos do algoritmo
                 PsiElement parent = expression.getParent();
+                if (!isValidContext(parent)) return;
 
-                if (isValidContext(parent)) {
-                    String opName = op == JavaTokenType.PLUSPLUS ? "pre-increment (++)" : "pre-decrement (--)";
-                    holder.registerProblem(
-                            expression,
-                            "Confusion atom: " + opName + " operator may cause confusion. Consider separating the operation.",
-                            ProblemHighlightType.WARNING,
-                            new ReplacePreIncrementQuickFix()
-                    );
-                }
+                String opName = op == JavaTokenType.PLUSPLUS
+                        ? "pre-increment (++)" : "pre-decrement (--)";
+
+                // Registra o problema no PAI para highlight cobrir a expressão inteira
+                PsiElement highlightTarget = getHighlightTarget(parent, expression);
+
+                holder.registerProblem(
+                        highlightTarget,
+                        "Confusion atom: " + opName + " operator may cause confusion. Consider separating the operation.",
+                        ProblemHighlightType.WARNING,
+                        new ReplacePreIncrementQuickFix()
+                );
             }
         };
     }
 
-    // Apenas ++ e -- prefixados (não pós-fixados)
     private boolean isPreIncrementOrDecrement(IElementType op) {
         return op == JavaTokenType.PLUSPLUS || op == JavaTokenType.MINUSMINUS;
     }
 
-    // Contextos do algoritmo:
-    // 1. Atribuição de variável       → PsiAssignmentExpression ou PsiLocalVariable
-    // 2. Operação binária             → PsiBinaryExpression / PsiPolyadicExpression
-    // 3. Parâmetro de método          → PsiExpressionList (filho de PsiMethodCallExpression)
-    // 4. Índice de array              → PsiArrayAccessExpression
-    // 5. Return de método             → PsiReturnStatement
-    // 6. Condição de if/while/for     → PsiBinaryExpression já cobre, mas PsiIfStatement também
     private boolean isValidContext(PsiElement parent) {
         return parent instanceof PsiAssignmentExpression
                 || parent instanceof PsiLocalVariable
                 || parent instanceof PsiBinaryExpression
                 || parent instanceof PsiPolyadicExpression
-                || parent instanceof PsiExpressionList       // parâmetro de método
+                || parent instanceof PsiExpressionList
                 || parent instanceof PsiArrayAccessExpression
                 || parent instanceof PsiReturnStatement;
+    }
+
+    private PsiElement getHighlightTarget(PsiElement parent, PsiPrefixExpression expression) {
+        if (parent instanceof PsiAssignmentExpression assignment) {
+            return assignment;
+        }
+        if (parent instanceof PsiLocalVariable localVar) {
+            // Sobe para a LocalVariable inteira: "int b = ++a"
+            return localVar;
+        }
+        if (parent instanceof PsiBinaryExpression binary) {
+            return binary;
+        }
+        if (parent instanceof PsiPolyadicExpression polyadic) {
+            return polyadic;
+        }
+        return expression;
     }
 }

@@ -23,35 +23,41 @@ public class ReplacePostIncrementQuickFix implements LocalQuickFix {
     public void applyFix(@NotNull Project project,
                          @NotNull ProblemDescriptor descriptor) {
 
-        PsiPostfixExpression postfixExpr = (PsiPostfixExpression) descriptor.getPsiElement();
+        // O elemento agora pode ser o pai — busca o PsiPostfixExpression dentro dele
+        PsiElement element = descriptor.getPsiElement();
+        PsiPostfixExpression postfixExpr = findPostfixExpression(element);
+        if (postfixExpr == null) return;
 
         IElementType op = postfixExpr.getOperationTokenType();
         PsiExpression operand = postfixExpr.getOperand();
         if (operand == null) return;
 
-        String varName = operand.getText();                           // ex: "a"
-        String opSymbol = op == JavaTokenType.PLUSPLUS ? "++" : "--"; // "++" ou "--"
+        String varName = operand.getText();
+        String opSymbol = op == JavaTokenType.PLUSPLUS ? "++" : "--";
 
-        // Sobe até o statement pai (linha inteira)
         PsiStatement parentStatement =
                 PsiTreeUtil.getParentOfType(postfixExpr, PsiStatement.class);
         if (parentStatement == null) return;
 
         PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
 
-        // Cria o statement separado: "a++;" ou "a--;"
         PsiStatement incrementStatement = factory.createStatementFromText(
                 varName + opSymbol + ";", null
         );
 
-        // Substitui a++/a-- pelo nome simples da variável na expressão original
-        // O valor original é preservado pois o incremento vai DEPOIS
         PsiExpression simpleVar = factory.createExpressionFromText(varName, null);
         postfixExpr.replace(simpleVar);
 
-        // Insere o incremento/decremento APÓS o statement pai
-        // (diferença fundamental em relação ao pré-incremento)
+        // Incremento vai DEPOIS do statement pai
         PsiElement parent = parentStatement.getParent();
         parent.addAfter(incrementStatement, parentStatement);
+    }
+
+    // Busca o PsiPostfixExpression: pode ser o próprio elemento ou um filho
+    private PsiPostfixExpression findPostfixExpression(PsiElement element) {
+        if (element instanceof PsiPostfixExpression postfix) {
+            return postfix;
+        }
+        return PsiTreeUtil.findChildOfType(element, PsiPostfixExpression.class);
     }
 }

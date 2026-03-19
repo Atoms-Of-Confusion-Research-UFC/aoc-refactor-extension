@@ -18,22 +18,24 @@ public class PostIncrementDecrementInspection extends AbstractBaseJavaLocalInspe
             public void visitPostfixExpression(@NotNull PsiPostfixExpression expression) {
                 super.visitPostfixExpression(expression);
 
-                // Verifica se é ++ ou -- (postfix)
                 IElementType op = expression.getOperationTokenType();
                 if (!isPostIncrementOrDecrement(op)) return;
 
-                // Verifica o pai — só marca se estiver nos contextos do algoritmo
                 PsiElement parent = expression.getParent();
+                if (!isValidContext(parent)) return;
 
-                if (isValidContext(parent)) {
-                    String opName = op == JavaTokenType.PLUSPLUS ? "post-increment (++)" : "post-decrement (--)";
-                    holder.registerProblem(
-                            expression,
-                            "Confusion atom: " + opName + " operator may cause confusion. Consider separating the operation.",
-                            ProblemHighlightType.WARNING,
-                            new ReplacePostIncrementQuickFix()
-                    );
-                }
+                String opName = op == JavaTokenType.PLUSPLUS
+                        ? "post-increment (++)" : "post-decrement (--)";
+
+                // Registra o problema no PAI para highlight cobrir a expressão inteira
+                PsiElement highlightTarget = getHighlightTarget(parent, expression);
+
+                holder.registerProblem(
+                        highlightTarget,
+                        "Confusion atom: " + opName + " operator may cause confusion. Consider separating the operation.",
+                        ProblemHighlightType.WARNING,
+                        new ReplacePostIncrementQuickFix()
+                );
             }
         };
     }
@@ -42,12 +44,6 @@ public class PostIncrementDecrementInspection extends AbstractBaseJavaLocalInspe
         return op == JavaTokenType.PLUSPLUS || op == JavaTokenType.MINUSMINUS;
     }
 
-    // Mesmos contextos do algoritmo:
-    // 1. Atribuição de variável       → PsiAssignmentExpression ou PsiLocalVariable
-    // 2. Operação binária             → PsiBinaryExpression / PsiPolyadicExpression
-    // 3. Parâmetro de método          → PsiExpressionList
-    // 4. Índice de array              → PsiArrayAccessExpression
-    // 5. Return de método             → PsiReturnStatement
     private boolean isValidContext(PsiElement parent) {
         return parent instanceof PsiAssignmentExpression
                 || parent instanceof PsiLocalVariable
@@ -56,5 +52,22 @@ public class PostIncrementDecrementInspection extends AbstractBaseJavaLocalInspe
                 || parent instanceof PsiExpressionList
                 || parent instanceof PsiArrayAccessExpression
                 || parent instanceof PsiReturnStatement;
+    }
+
+    private PsiElement getHighlightTarget(PsiElement parent, PsiPostfixExpression expression) {
+        if (parent instanceof PsiAssignmentExpression assignment) {
+            return assignment;
+        }
+        if (parent instanceof PsiLocalVariable localVar) {
+            // Sobe para a LocalVariable inteira: "int b = a++"
+            return localVar;
+        }
+        if (parent instanceof PsiBinaryExpression binary) {
+            return binary;
+        }
+        if (parent instanceof PsiPolyadicExpression polyadic) {
+            return polyadic;
+        }
+        return expression;
     }
 }

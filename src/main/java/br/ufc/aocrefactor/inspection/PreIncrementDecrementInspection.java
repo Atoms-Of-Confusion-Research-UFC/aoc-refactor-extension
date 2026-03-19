@@ -26,10 +26,10 @@ public class PreIncrementDecrementInspection extends AbstractBaseJavaLocalInspec
                 PsiElement parent = expression.getParent();
 
                 if (isValidContext(parent)) {
-                    String opName = op == JavaTokenType.PLUSPLUS ? "pré-incremento (++)" : "pré-decremento (--)";
+                    String opName = op == JavaTokenType.PLUSPLUS ? "pre-increment (++)" : "pre-decrement (--)";
                     holder.registerProblem(
                             expression,
-                            "Átomo de confusão: operador de " + opName + " pode causar confusão. Considere separar a operação.",
+                            "Confusion atom: " + opName + " operator may cause confusion. Consider separating the operation.",
                             ProblemHighlightType.WARNING,
                             new ReplacePreIncrementQuickFix()
                     );

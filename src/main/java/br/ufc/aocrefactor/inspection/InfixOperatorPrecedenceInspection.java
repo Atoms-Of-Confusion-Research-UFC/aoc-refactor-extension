@@ -49,7 +49,7 @@ public class InfixOperatorPrecedenceInspection extends AbstractBaseJavaLocalInsp
 
             holder.registerProblem(
                     expression,
-                    "Átomo de confusão: precedência de operador aritmético. Adicione parênteses para clareza.",
+                    "Confusion atom: arithmetic operator precedence. Add parentheses for clarity.",
                     ProblemHighlightType.WARNING,
                     new WrapWithParenthesesQuickFix()
             );
@@ -60,7 +60,7 @@ public class InfixOperatorPrecedenceInspection extends AbstractBaseJavaLocalInsp
         if (isLogicalOperator(op) && isLogicalOperator(parentOp) && !op.equals(parentOp)) {
             holder.registerProblem(
                     expression,
-                    "Átomo de confusão: precedência de operador lógico. Adicione parênteses para clareza.",
+                    "Confusion atom: logical operator precedence. Add parentheses for clarity.",
                     ProblemHighlightType.WARNING,
                     new WrapWithParenthesesQuickFix()
             );

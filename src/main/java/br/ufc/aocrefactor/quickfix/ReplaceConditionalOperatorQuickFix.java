@@ -11,7 +11,7 @@ public class ReplaceConditionalOperatorQuickFix implements LocalQuickFix {
 
     @Override
     public @NotNull String getName() {
-        return "Substituir por if-else";
+        return "Replace with if-else";
     }
 
     @Override

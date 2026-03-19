@@ -26,10 +26,10 @@ public class PostIncrementDecrementInspection extends AbstractBaseJavaLocalInspe
                 PsiElement parent = expression.getParent();
 
                 if (isValidContext(parent)) {
-                    String opName = op == JavaTokenType.PLUSPLUS ? "pós-incremento (++)" : "pós-decremento (--)";
+                    String opName = op == JavaTokenType.PLUSPLUS ? "post-increment (++)" : "post-decrement (--)";
                     holder.registerProblem(
                             expression,
-                            "Átomo de confusão: operador de " + opName + " pode causar confusão. Considere separar a operação.",
+                            "Confusion atom: " + opName + " operator may cause confusion. Consider separating the operation.",
                             ProblemHighlightType.WARNING,
                             new ReplacePostIncrementQuickFix()
                     );

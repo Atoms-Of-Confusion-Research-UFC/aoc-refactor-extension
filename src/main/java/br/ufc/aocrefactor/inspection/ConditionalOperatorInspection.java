@@ -20,7 +20,7 @@ public class ConditionalOperatorInspection extends AbstractBaseJavaLocalInspecti
 
                 holder.registerProblem(
                         expression,
-                        "Átomo de confusão: operador condicional (?:). Considere usar if-else.",
+                        "Confusion atom: conditional operator (?:). Consider using if-else.",
                         ProblemHighlightType.WARNING,
                         new ReplaceConditionalOperatorQuickFix()
                 );

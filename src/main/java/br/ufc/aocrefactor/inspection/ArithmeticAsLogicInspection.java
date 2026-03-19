@@ -41,7 +41,7 @@ public class ArithmeticAsLogicInspection extends AbstractBaseJavaLocalInspection
 
                 holder.registerProblem(
                         expression,
-                        "Átomo de confusão: aritmética usada como lógica. Considere usar operadores lógicos explícitos.",
+                        "Confusion atom: arithmetic used as logic. Consider using explicit logical operators.",
                         ProblemHighlightType.WARNING,
                         new ReplaceArithmeticAsLogicQuickFix()
                 );

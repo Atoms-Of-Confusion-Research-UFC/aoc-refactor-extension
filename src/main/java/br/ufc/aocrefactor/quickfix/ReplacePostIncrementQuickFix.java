@@ -11,7 +11,7 @@ public class ReplacePostIncrementQuickFix implements LocalQuickFix {
 
     @Override
     public @NotNull String getName() {
-        return "Separar pós-incremento/decremento em linha própria";
+        return "Separate post-increment/decrement into its own line";
     }
 
     @Override

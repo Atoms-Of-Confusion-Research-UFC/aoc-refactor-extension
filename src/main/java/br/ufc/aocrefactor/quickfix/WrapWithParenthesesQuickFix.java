@@ -10,7 +10,7 @@ public class WrapWithParenthesesQuickFix implements LocalQuickFix {
 
     @Override
     public @NotNull String getName() {
-        return "Adicionar parênteses para clareza";
+        return "Add parentheses for clarity";
     }
 
     @Override

@@ -11,7 +11,7 @@ public class ReplaceArithmeticAsLogicQuickFix implements LocalQuickFix {
 
     @Override
     public @NotNull String getName() {
-        return "Substituir por expressão lógica equivalente";
+        return "Replace with equivalent logical expression";
     }
 
     @Override

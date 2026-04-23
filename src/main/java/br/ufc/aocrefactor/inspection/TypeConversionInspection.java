@@ -1,6 +1,6 @@
 package br.ufc.aocrefactor.inspection;
 
-import br.ufc.aocrefactor.quickfix.AddExplicitCommentQuickFix;
+import br.ufc.aocrefactor.quickfix.TypeConversionQuickFix;
 import com.intellij.codeInspection.*;
 import com.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
@@ -43,7 +43,8 @@ public class TypeConversionInspection extends AbstractBaseJavaLocalInspectionToo
                         expression,
                         "Confusion atom: narrowing type conversion may cause precision loss or unexpected results.",
                         ProblemHighlightType.WARNING,
-                        new AddExplicitCommentQuickFix()
+                        new TypeConversionQuickFix(TypeConversionQuickFix.Mode.ADD_COMMENT),
+                        new TypeConversionQuickFix(TypeConversionQuickFix.Mode.CHANGE_TYPE)
                 );
             }
         };

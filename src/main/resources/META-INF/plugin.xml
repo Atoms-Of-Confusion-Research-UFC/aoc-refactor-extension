@@ -51,5 +51,14 @@
                 enabledByDefault="true"
                 level="WARNING"
                 implementationClass="br.ufc.aocrefactor.inspection.ArithmeticAsLogicInspection"/>
+
+        <!-- Inspection 6: Conversão de tipo -->
+        <localInspection
+                language="JAVA"
+                displayName="Narrowing type conversion (confusion atom)"
+                groupName="Confusion Atoms"
+                enabledByDefault="true"
+                level="WARNING"
+                implementationClass="br.ufc.aocrefactor.inspection.TypeConversionInspection"/>
     </extensions>
 </idea-plugin>

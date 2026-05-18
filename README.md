@@ -1,96 +1,205 @@
-# IntelliJ Platform Plugin Template
+# Confusion Atoms Refactoring Plugin for IntelliJ IDEA
 
-[![Twitter Follow](https://img.shields.io/badge/follow-%40JBPlatform-1DA1F2?logo=twitter)](https://twitter.com/JBPlatform)
-[![Developers Forum](https://img.shields.io/badge/JetBrains%20Platform-Join-blue)][jb:forum]
+An IntelliJ IDEA extension developed as part of the research project **"To Refactor or Not to Refactor Atoms of Confusion? Evidence from a Scoping Review, Bytecode-Level Analysis, and Tool Support"**. The plugin detects and refactors Atoms of Confusion (ACs) in Java source code using PSI-based semantic analysis via the JetBrains Plugin SDK.
 
-## Plugin template structure
+---
 
-A generated project contains the following content structure:
+## Overview
+
+Atoms of Confusion are the smallest syntactic code patterns that are formally correct but commonly misinterpreted by developers. This plugin provides IDE-assisted detection and refactoring of selected ACs directly within IntelliJ IDEA, offering real-time warnings and quick fixes without requiring external tools.
+
+---
+
+## Requirements
+
+- IntelliJ IDEA (Community or Ultimate) 2023.3+
+- JDK 17+
+- Gradle (managed via wrapper)
+
+---
+
+## Installation
+
+### From source
+
+```bash
+git clone <repository-url>
+cd aoc-refactor
+./gradlew buildPlugin
+```
+
+The generated `.zip` file will be located at `build/distributions/`. To install:
+
+`Settings → Plugins → ⚙️ → Install Plugin from Disk`
+
+### Running in sandbox
+
+```bash
+./gradlew runIde
+```
+
+---
+
+## Project Structure
 
 ```
-.
-├── .run/                   Predefined Run/Debug Configurations
-├── build/                  Output build directory
-├── gradle
-│   ├── wrapper/            Gradle Wrapper
-├── src                     Plugin sources
-│   ├── main
-│   │   ├── kotlin/         Kotlin production sources
-│   │   └── resources/      Resources - plugin.xml, icons, messages
-├── .gitignore              Git ignoring rules
-├── build.gradle.kts        Gradle build configuration
-├── gradle.properties       Gradle configuration properties
-├── gradlew                 *nix Gradle Wrapper script
-├── gradlew.bat             Windows Gradle Wrapper script
-├── README.md               README
-└── settings.gradle.kts     Gradle project settings
+aoc-refactor/
+├── build.gradle.kts
+├── src/main/
+│   ├── java/br/ufc/aocrefactor/
+│   │   ├── inspection/
+│   │   │   ├── ConditionalOperatorInspection.java
+│   │   │   ├── InfixOperatorPrecedenceInspection.java
+│   │   │   ├── PreIncrementDecrementInspection.java
+│   │   │   ├── PostIncrementDecrementInspection.java
+│   │   │   ├── ArithmeticAsLogicInspection.java
+│   │   │   └── TypeConversionInspection.java
+│   │   └── quickfix/
+│   │       ├── ReplaceConditionalOperatorQuickFix.java
+│   │       ├── WrapWithParenthesesQuickFix.java
+│   │       ├── ReplacePreIncrementQuickFix.java
+│   │       ├── ReplacePostIncrementQuickFix.java
+│   │       ├── ReplaceArithmeticAsLogicQuickFix.java
+│   │       └── TypeConversionQuickFix.java
+│   └── resources/META-INF/
+│       └── plugin.xml
 ```
 
-In addition to the configuration files, the most crucial part is the `src` directory, which contains our implementation and the manifest for our plugin – [plugin.xml][file:plugin.xml].
+---
 
-> [!NOTE]
-> To use Java in your plugin, create the `/src/main/java` directory.
+## Implementation
 
-## Plugin configuration file
+The plugin was developed using the **JetBrains Plugin SDK** with the **Local Inspections** mechanism over the **PSI (Program Structure Interface)** — the semantic tree structure that IntelliJ uses internally to represent Java source code.
 
-The plugin configuration file is a [plugin.xml][file:plugin.xml] file located in the `src/main/resources/META-INF` directory.
-It provides general information about the plugin, its dependencies, extensions, and listeners.
+Each atom is implemented as an **Inspection/QuickFix** pair. The Inspection traverses the PSI tree via the **Visitor** design pattern, identifying nodes that match the atom's syntactic pattern. The QuickFix applies the refactoring directly on the tree, without textual manipulation, ensuring the transformation respects the program's semantic structure.
 
-You can read more about this file in the [Plugin Configuration File][docs:plugin.xml] section of our documentation.
+---
 
-If you're still not quite sure what this is all about, read our introduction: [What is the IntelliJ Platform?][docs:intro]
+## Implemented Atoms
 
-$H$H Predefined Run/Debug configurations
+### 3.3.4 Conditional Operator
 
-Within the default project structure, there is a `.run` directory provided containing predefined *Run/Debug configurations* that expose corresponding Gradle tasks:
+Detects every occurrence of the ternary operator `?:` and offers a refactoring to an explicit `if-else` structure.
 
-| Configuration name | Description                                                                                                                                                                         |
-|--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Run Plugin         | Runs [`:runIde`][gh:intellij-platform-gradle-plugin-runIde] IntelliJ Platform Gradle Plugin task. Use the *Debug* icon for plugin debugging.                                        |
-| Run Tests          | Runs [`:test`][gradle:lifecycle-tasks] Gradle task.                                                                                                                                 |
-| Run Verifications  | Runs [`:verifyPlugin`][gh:intellij-platform-gradle-plugin-verifyPlugin] IntelliJ Platform Gradle Plugin task to check the plugin compatibility against the specified IntelliJ IDEs. |
+```java
+// Before
+int b = a == 3 ? 2 : 1;
 
-> [!NOTE]
-> You can find the logs from the running task in the `idea.log` tab.
+// After
+int b;
+if (a == 3) { b = 2; } else { b = 1; }
+```
 
-## Publishing the plugin
+Covered contexts: variable assignment, method parameter, return statement.
 
-> [!TIP]
-> Make sure to follow all guidelines listed in [Publishing a Plugin][docs:publishing] to follow all recommended and required steps.
+---
 
-Releasing a plugin to [JetBrains Marketplace](https://plugins.jetbrains.com) is a straightforward operation that uses the `publishPlugin` Gradle task provided by the [intellij-platform-gradle-plugin][gh:intellij-platform-gradle-plugin-docs].
+### 3.3.1 Infix Operator Precedence
 
-You can also upload the plugin to the [JetBrains Plugin Repository](https://plugins.jetbrains.com/plugin/upload) manually via UI.
+Detects arithmetic expressions where `*`, `/` or `%` appear under `+` or `-` without explicit parentheses, and logical expressions where `&&` and `||` are mixed without parentheses.
 
-## Useful links
+```java
+// Before
+int x = a + b * c;
+boolean l = p || q && r;
 
-- [IntelliJ Platform SDK Plugin SDK][docs]
-- [IntelliJ Platform Gradle Plugin Documentation][gh:intellij-platform-gradle-plugin-docs]
-- [IntelliJ Platform Explorer][jb:ipe]
-- [JetBrains Marketplace Quality Guidelines][jb:quality-guidelines]
-- [IntelliJ Platform UI Guidelines][jb:ui-guidelines]
-- [JetBrains Marketplace Paid Plugins][jb:paid-plugins]
-- [IntelliJ SDK Code Samples][gh:code-samples]
+// After
+int x = a + (b * c);
+boolean l = p || (q && r);
+```
 
-[docs]: https://plugins.jetbrains.com/docs/intellij
-[docs:intro]: https://plugins.jetbrains.com/docs/intellij/intellij-platform.html?from=IJPluginTemplate
-[docs:plugin.xml]: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html?from=IJPluginTemplate
-[docs:publishing]: https://plugins.jetbrains.com/docs/intellij/publishing-plugin.html?from=IJPluginTemplate
+String concatenation expressions are excluded from detection.
 
-[file:plugin.xml]: ./src/main/resources/META-INF/plugin.xml
+---
 
-[gh:code-samples]: https://github.com/JetBrains/intellij-sdk-code-samples
-[gh:intellij-platform-gradle-plugin]: https://github.com/JetBrains/intellij-platform-gradle-plugin
-[gh:intellij-platform-gradle-plugin-docs]: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html
-[gh:intellij-platform-gradle-plugin-runIde]: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-tasks.html#runIde
-[gh:intellij-platform-gradle-plugin-verifyPlugin]: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-tasks.html#verifyPlugin
+### 3.3.2 Pre-Increment/Decrement
 
-[gradle:lifecycle-tasks]: https://docs.gradle.org/current/userguide/java_plugin.html#lifecycle_tasks
+Detects the prefix `++`/`--` operator in contexts where it may cause confusion: variable assignment, binary operation, method parameter, array index, and return statement. Refactors by separating the increment into its own line **before** the parent statement.
 
-[jb:github]: https://github.com/JetBrains/.github/blob/main/profile/README.md
-[jb:forum]: https://platform.jetbrains.com/
-[jb:quality-guidelines]: https://plugins.jetbrains.com/docs/marketplace/quality-guidelines.html
-[jb:paid-plugins]: https://plugins.jetbrains.com/docs/marketplace/paid-plugins-marketplace.html
-[jb:quality-guidelines]: https://plugins.jetbrains.com/docs/marketplace/quality-guidelines.html
-[jb:ipe]: https://jb.gg/ipe
-[jb:ui-guidelines]: https://jetbrains.github.io/ui
+```java
+// Before
+int b = ++a;
+
+// After
+a++;
+int b = a;
+```
+
+---
+
+### 3.3.3 Post-Increment/Decrement
+
+Same set of contexts as Pre-Increment/Decrement, but for the suffix operator. The increment is placed **after** the parent statement, preserving the original value semantics.
+
+```java
+// Before
+int b = a++;
+
+// After
+int b = a;
+a++;
+```
+
+---
+
+### 3.3.5 Arithmetic as Logic
+
+Detects arithmetic expressions compared to zero via `==` or `!=` and replaces them with explicit logical equivalents.
+
+| Before | After |
+|---|---|
+| `a * b == 0` | `a == 0 \|\| b == 0` |
+| `a * b != 0` | `a != 0 && b != 0` |
+| `a - b == 0` | `a == b` |
+| `a - b != 0` | `a != b` |
+| `a + b == 0` | `a == -b` |
+
+---
+
+### 3.3.10 Type Conversion
+
+Detects explicit narrowing conversions between primitive types that are performed without the use of treatment APIs or the modulo operator. The following narrowing paths are covered:
+
+| From | To |
+|---|---|
+| `short` | `byte`, `char` |
+| `char` | `byte`, `short` |
+| `int` | `byte`, `short`, `char` |
+| `long` | `byte`, `short`, `char`, `int` |
+| `float` | `byte`, `short`, `char`, `int`, `long` |
+| `double` | `byte`, `short`, `char`, `int`, `long`, `float` |
+
+When a narrowing conversion is detected, the developer is warned and may choose to apply a QuickFix that inserts a comment on the preceding line flagging the conversion and the possible precision loss involved.
+
+```java
+// Before
+byte b = (byte) a;
+
+// After (with QuickFix applied)
+// Narrowing conversion: short -> byte (possible precision loss)
+byte b = (byte) a;
+```
+
+Excluded from detection: casts whose operand contains a method invocation (possible API usage) or a modulo operation (explicit data treatment). For literal operands, detection only occurs when the value is outside the representable range of the target type.
+
+---
+
+## Technical Approach
+
+The highlight range registered by `registerProblem` is deliberately set to the **parent node** of the detected expression in cases where the atom's context adds relevant semantic information — for example, the full binary expression `3 + a++` rather than just `a++`. This is achieved by the `getHighlightTarget` method in each inspection, which selects the most informative PSI node to highlight based on the parent context.
+
+QuickFixes locate the target sub-expression using `PsiTreeUtil.findChildOfType`, which recursively descends the PSI tree from the highlighted node, ensuring the fix works correctly regardless of which node was used as the highlight target.
+
+---
+
+## Related Work
+
+This plugin is part of the broader research project described in:
+
+> *To Refactor or Not to Refactor Atoms of Confusion? Evidence from a Scoping Review, Bytecode-Level Analysis, and Tool Support* (Anonymous, 2026)
+
+---
+
+## License
+
+This project is developed for academic research purposes.

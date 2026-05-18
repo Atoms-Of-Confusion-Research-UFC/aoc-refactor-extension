@@ -24,7 +24,7 @@ Atoms of Confusion are the smallest syntactic code patterns that are formally co
 
 ```bash
 git clone <repository-url>
-cd aoc-refactor-extension
+cd aoc-refactor
 ./gradlew runIde
 ```
 

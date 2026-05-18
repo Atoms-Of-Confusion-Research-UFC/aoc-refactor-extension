@@ -20,25 +20,25 @@ Atoms of Confusion are the smallest syntactic code patterns that are formally co
 
 ## Installation
 
-### From source
+### Running in sandbox (recommended)
 
 ```bash
 git clone <repository-url>
-cd aoc-refactor-extension
+cd aoc-refactor
+./gradlew runIde
+```
+
+A sandbox do IntelliJ abrirá automaticamente com o plugin instalado.
+
+### From source
+
+```bash
 ./gradlew buildPlugin
 ```
 
 The generated `.zip` file will be located at `build/distributions/`. To install:
 
 `Settings → Plugins → ⚙️ → Install Plugin from Disk`
-
-### Running in sandbox
-
-```bash
-./gradlew runIde
-```
-
----
 
 ## Project Structure
 

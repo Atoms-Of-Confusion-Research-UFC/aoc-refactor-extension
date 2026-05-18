@@ -1,4 +1,4 @@
-# Confusion Atoms Refactoring Plugin for IntelliJ IDEA
+# Confusion Atoms Refactoring Plugin for IntelliJ IDEA 
 
 An IntelliJ IDEA extension developed as part of the research project **"To Refactor or Not to Refactor Atoms of Confusion? Evidence from a Scoping Review, Bytecode-Level Analysis, and Tool Support"**. The plugin detects and refactors Atoms of Confusion (ACs) in Java source code using PSI-based semantic analysis via the JetBrains Plugin SDK.
 
@@ -24,7 +24,7 @@ Atoms of Confusion are the smallest syntactic code patterns that are formally co
 
 ```bash
 git clone <repository-url>
-cd aoc-refactor-extension
+cd aoc-refactor
 ./gradlew runIde
 ```
 
@@ -40,13 +40,15 @@ The generated `.zip` file will be located at `build/distributions/`. To install:
 
 `Settings → Plugins → ⚙️ → Install Plugin from Disk`
 
+---
+
 ## Project Structure
 
 ```
 aoc-refactor/
 ├── build.gradle.kts
 ├── src/main/
-│   ├── java/br/ufc/aocrefactor/
+│   ├── java/com/anon/aocrefactor/
 │   │   ├── inspection/
 │   │   │   ├── ConditionalOperatorInspection.java
 │   │   │   ├── InfixOperatorPrecedenceInspection.java

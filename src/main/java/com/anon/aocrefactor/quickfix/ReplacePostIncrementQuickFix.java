@@ -1,4 +1,4 @@
-package br.ufc.aocrefactor.quickfix;
+package com.anon.aocrefactor.quickfix;
 
 import com.intellij.codeInspection.*;
 import com.intellij.openapi.project.Project;
@@ -7,11 +7,11 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
-public class ReplacePreIncrementQuickFix implements LocalQuickFix {
+public class ReplacePostIncrementQuickFix implements LocalQuickFix {
 
     @Override
     public @NotNull String getName() {
-        return "Separate pre-increment/decrement into its own line";
+        return "Separate post-increment/decrement into its own line";
     }
 
     @Override
@@ -23,20 +23,20 @@ public class ReplacePreIncrementQuickFix implements LocalQuickFix {
     public void applyFix(@NotNull Project project,
                          @NotNull ProblemDescriptor descriptor) {
 
-        // O elemento agora pode ser o pai — busca o PsiPrefixExpression dentro dele
+        // O elemento agora pode ser o pai — busca o PsiPostfixExpression dentro dele
         PsiElement element = descriptor.getPsiElement();
-        PsiPrefixExpression prefixExpr = findPrefixExpression(element);
-        if (prefixExpr == null) return;
+        PsiPostfixExpression postfixExpr = findPostfixExpression(element);
+        if (postfixExpr == null) return;
 
-        IElementType op = prefixExpr.getOperationTokenType();
-        PsiExpression operand = prefixExpr.getOperand();
+        IElementType op = postfixExpr.getOperationTokenType();
+        PsiExpression operand = postfixExpr.getOperand();
         if (operand == null) return;
 
         String varName = operand.getText();
         String opSymbol = op == JavaTokenType.PLUSPLUS ? "++" : "--";
 
         PsiStatement parentStatement =
-                PsiTreeUtil.getParentOfType(prefixExpr, PsiStatement.class);
+                PsiTreeUtil.getParentOfType(postfixExpr, PsiStatement.class);
         if (parentStatement == null) return;
 
         PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
@@ -46,18 +46,18 @@ public class ReplacePreIncrementQuickFix implements LocalQuickFix {
         );
 
         PsiExpression simpleVar = factory.createExpressionFromText(varName, null);
-        prefixExpr.replace(simpleVar);
+        postfixExpr.replace(simpleVar);
 
-        // Incremento vai ANTES do statement pai
+        // Incremento vai DEPOIS do statement pai
         PsiElement parent = parentStatement.getParent();
-        parent.addBefore(incrementStatement, parentStatement);
+        parent.addAfter(incrementStatement, parentStatement);
     }
 
-    // Busca o PsiPrefixExpression: pode ser o próprio elemento ou um filho
-    private PsiPrefixExpression findPrefixExpression(PsiElement element) {
-        if (element instanceof PsiPrefixExpression prefix) {
-            return prefix;
+    // Busca o PsiPostfixExpression: pode ser o próprio elemento ou um filho
+    private PsiPostfixExpression findPostfixExpression(PsiElement element) {
+        if (element instanceof PsiPostfixExpression postfix) {
+            return postfix;
         }
-        return PsiTreeUtil.findChildOfType(element, PsiPrefixExpression.class);
+        return PsiTreeUtil.findChildOfType(element, PsiPostfixExpression.class);
     }
 }

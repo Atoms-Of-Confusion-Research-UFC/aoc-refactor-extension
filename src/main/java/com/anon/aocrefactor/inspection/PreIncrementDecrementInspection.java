@@ -1,6 +1,6 @@
-package br.ufc.aocrefactor.inspection;
+package com.anon.aocrefactor.inspection;
 
-import br.ufc.aocrefactor.quickfix.ReplacePreIncrementQuickFix;
+import com.anon.aocrefactor.quickfix.ReplacePreIncrementQuickFix;
 import com.intellij.codeInspection.*;
 import com.intellij.psi.*;
 import com.intellij.psi.tree.IElementType;

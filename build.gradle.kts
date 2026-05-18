@@ -3,7 +3,7 @@ plugins {
     id("org.jetbrains.intellij.platform") version "2.3.0"
 }
 
-group = "br.ufc"
+group = "com.anon"
 version = "1.0.0"
 
 repositories {

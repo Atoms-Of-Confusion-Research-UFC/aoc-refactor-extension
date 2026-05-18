@@ -1,9 +1,9 @@
-package br.ufc.aocrefactor.inspection;
+package com.anon.aocrefactor.inspection;
 
 import com.intellij.codeInspection.*;
 import com.intellij.psi.*;
 import com.intellij.psi.tree.IElementType;
-import br.ufc.aocrefactor.quickfix.WrapWithParenthesesQuickFix;
+import com.anon.aocrefactor.quickfix.WrapWithParenthesesQuickFix;
 import org.jetbrains.annotations.NotNull;
 
 public class InfixOperatorPrecedenceInspection extends AbstractBaseJavaLocalInspectionTool {

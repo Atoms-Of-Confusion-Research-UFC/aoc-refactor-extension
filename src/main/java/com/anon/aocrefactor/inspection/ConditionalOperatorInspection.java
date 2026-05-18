@@ -1,6 +1,6 @@
-package br.ufc.aocrefactor.inspection;
+package com.anon.aocrefactor.inspection;
 
-import br.ufc.aocrefactor.quickfix.ReplaceConditionalOperatorQuickFix;
+import com.anon.aocrefactor.quickfix.ReplaceConditionalOperatorQuickFix;
 import com.intellij.codeInspection.*;
 import com.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;

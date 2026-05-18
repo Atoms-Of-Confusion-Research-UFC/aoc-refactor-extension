@@ -1,5 +1,5 @@
 <idea-plugin>
-    <id>br.ufc.confusion-atoms-refactor</id>
+    <id>com.anon.confusion-atoms-refactor</id>
     <name>Confusion Atoms Refactor</name>
     <vendor></vendor>
     <description>Detecta e refatora átomos de confusão em código Java.</description>
@@ -15,7 +15,7 @@
                 groupName="Confusion Atoms"
                 enabledByDefault="true"
                 level="WARNING"
-                implementationClass="br.ufc.aocrefactor.inspection.ConditionalOperatorInspection"/>
+                implementationClass="com.anon.aocrefactor.inspection.ConditionalOperatorInspection"/>
         <!-- Inspection 2: Precedência de operadores -->
         <localInspection
                 language="JAVA"
@@ -23,7 +23,7 @@
                 groupName="Confusion Atoms"
                 enabledByDefault="true"
                 level="WARNING"
-                implementationClass="br.ufc.aocrefactor.inspection.InfixOperatorPrecedenceInspection"/>
+                implementationClass="com.anon.aocrefactor.inspection.InfixOperatorPrecedenceInspection"/>
 
         <!-- Inspection 3: Pré-incremento/decremento -->
         <localInspection
@@ -32,7 +32,7 @@
                 groupName="Confusion Atoms"
                 enabledByDefault="true"
                 level="WARNING"
-                implementationClass="br.ufc.aocrefactor.inspection.PreIncrementDecrementInspection"/>
+                implementationClass="com.anon.aocrefactor.inspection.PreIncrementDecrementInspection"/>
 
         <!-- Inspection 4: Pós-incremento/decremento -->
         <localInspection
@@ -41,7 +41,7 @@
                 groupName="Confusion Atoms"
                 enabledByDefault="true"
                 level="WARNING"
-                implementationClass="br.ufc.aocrefactor.inspection.PostIncrementDecrementInspection"/>
+                implementationClass="com.anon.aocrefactor.inspection.PostIncrementDecrementInspection"/>
 
         <!-- Inspection 5: Aritmética como lógica -->
         <localInspection
@@ -50,7 +50,7 @@
                 groupName="Confusion Atoms"
                 enabledByDefault="true"
                 level="WARNING"
-                implementationClass="br.ufc.aocrefactor.inspection.ArithmeticAsLogicInspection"/>
+                implementationClass="com.anon.aocrefactor.inspection.ArithmeticAsLogicInspection"/>
 
         <!-- Inspection 6: Conversão de tipo -->
         <localInspection
@@ -59,6 +59,6 @@
                 groupName="Confusion Atoms"
                 enabledByDefault="true"
                 level="WARNING"
-                implementationClass="br.ufc.aocrefactor.inspection.TypeConversionInspection"/>
+                implementationClass="com.anon.aocrefactor.inspection.TypeConversionInspection"/>
     </extensions>
 </idea-plugin>

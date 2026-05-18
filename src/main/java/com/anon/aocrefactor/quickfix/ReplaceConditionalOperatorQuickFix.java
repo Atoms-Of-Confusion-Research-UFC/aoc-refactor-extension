@@ -1,4 +1,4 @@
-package br.ufc.aocrefactor.quickfix;
+package com.anon.aocrefactor.quickfix;
 
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
